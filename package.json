@@ -9,6 +9,14 @@
     "build": "tsc -p .",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"tests/**/*.test.ts\""
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kankou-aliaksei/flexible-text-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kankou-aliaksei/flexible-text-search/issues"
+  },
+  "homepage": "https://github.com/kankou-aliaksei/flexible-text-search#readme",
   "keywords": [
     "elasticsearch",
     "fuzzy",
