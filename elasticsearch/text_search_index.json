@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "filter": {
+          "synonym": {
+            "type": "synonym",
+            "ignore_case": "true",
+            "synonyms_path": "/usr/share/elasticsearch/config/synonyms/synonyms.txt"
+          },
+          "length": {
+            "type": "length",
+            "min": 1
+          },
+          "english_stop": {
+            "type": "stop",
+            "stopwords": "_english_"
+          }
+        },
+        "analyzer": {
+          "custom_analyzer": {
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "synonym",
+              "length"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "content": {
+        "type": "text",
+        "analyzer": "custom_analyzer",
+        "term_vector": "with_positions_offsets_payloads"
+      }
+    }
+  }
+}
