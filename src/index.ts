@@ -1,1 +1,1 @@
-import { FlexibleTextSearch } from './flexible-text-search';
+export { FlexibleTextSearch } from './flexible-text-search';

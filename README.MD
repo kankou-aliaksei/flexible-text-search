@@ -51,3 +51,104 @@ It checks if phrases exist in the text
 
 * npm i
 * npm run test
+
+## Example
+
+```
+import { FlexibleTextSearch } from 'flexible-text-search';
+
+const fts = new FlexibleTextSearch();
+
+const request = {
+    content:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum I am now going to start the recording session vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero the our meeting is over nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.',
+    prePhrases: [
+        "I'm now going to start the recording session",
+        'I am now going to start the recording session',
+        "I'm going to do a recording session",
+        'I am going to do a recording session'
+    ],
+    postPhrases: ['the our meeting is now over', 'the our meeting is over'],
+    foundTemplate: '${}',
+    notFoundTemplate: 'Not found'
+};
+
+const result = await fts.extractText(request);
+
+console.log(JSON.stringify(result))
+```
+
+### Result
+
+```
+{
+   "content":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum I am now going to start the recording session vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero the our meeting is over nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
+   "phrasesToSearch":[
+      {
+         "value":"I'm now going to start the recording session",
+         "type":"PRE_PHRASE"
+      },
+      {
+         "value":"I am now going to start the recording session",
+         "type":"PRE_PHRASE"
+      },
+      {
+         "value":"I'm going to do a recording session",
+         "type":"PRE_PHRASE"
+      },
+      {
+         "value":"I am going to do a recording session",
+         "type":"PRE_PHRASE"
+      },
+      {
+         "value":"the our meeting is now over",
+         "type":"POST_PHRASE"
+      },
+      {
+         "value":"the our meeting is over",
+         "type":"POST_PHRASE"
+      }
+   ],
+   "foundTemplate":"${}",
+   "notFoundTemplate":"Not found",
+   "extractedText":"vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero",
+   "foundPrePhrases":[
+      {
+         "searchText":"i am now going to start the recording session",
+         "searchWords":[
+            "i",
+            "am",
+            "now",
+            "going",
+            "to",
+            "start",
+            "the",
+            "recording",
+            "session"
+         ],
+         "foundText":"I am now going to start the recording session",
+         "startOffset":423,
+         "endOffset":468,
+         "accuracy":1,
+         "textType":"PRE_PHRASE"
+      }
+   ],
+   "foundPostPhrases":[
+      {
+         "searchText":"the our meeting is over",
+         "searchWords":[
+            "the",
+            "our",
+            "meeting",
+            "is",
+            "over"
+         ],
+         "foundText":"the our meeting is over",
+         "startOffset":582,
+         "endOffset":605,
+         "accuracy":1,
+         "textType":"POST_PHRASE"
+      }
+   ]
+}
+```

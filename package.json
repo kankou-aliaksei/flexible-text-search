@@ -1,8 +1,8 @@
 {
   "name": "flexible-text-search",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Flexible text search with search by part of a phrase, fuzzy for each word, and use of synonyms. Extract text between phrases",
-  "main": "src/main.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "source tests/es_start.sh && jest --verbose true && tests/es_stop.sh",
     "lint": "tslint --project . --format verbose",
