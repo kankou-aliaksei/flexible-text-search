@@ -36,11 +36,11 @@ export interface ElasticSearchApiOptions {
 }
 
 export interface ExtractTextOptions {
-    esHost: string | undefined;
-    esPort: number | undefined;
-    esSearchIndex: string | undefined;
-    logLevel: LogLevel | undefined;
-    esTimeout: number | undefined;
+    esHost?: string | undefined;
+    esPort?: number | undefined;
+    esSearchIndex?: string | undefined;
+    logLevel?: LogLevel | undefined;
+    esTimeout?: number | undefined;
 }
 
 export interface ExtractedTextEntity {

@@ -61,7 +61,10 @@ See more examples in the [/tests](./tests/src).
 ```
 import { FlexibleTextSearch } from 'flexible-text-search';
 
-const fts = new FlexibleTextSearch();
+const fts = new FlexibleTextSearch({
+    esHost: 'localhost',
+    esPort: 9200
+});
 
 const request = {
     content:
