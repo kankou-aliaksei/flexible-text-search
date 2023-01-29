@@ -1,4 +1,4 @@
-import { FlexibleTextSearch } from '../../src/flexible-text-search';
+import { FlexibleTextSearch } from '../../src';
 
 const fts = new FlexibleTextSearch();
 
@@ -16,9 +16,7 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -42,15 +40,12 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
-        const expectedExtractedText = 'Not found';
 
-        expect(result.extractedText).toEqual(expectedExtractedText);
+        expect(result.extractedText).toBeUndefined();
     });
 
     /**
@@ -66,15 +61,12 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
-        const expectedExtractedText = 'Not found';
 
-        expect(result.extractedText).toEqual(expectedExtractedText);
+        expect(result.extractedText).toBeUndefined();
     });
 
     /**
@@ -90,9 +82,7 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -108,16 +98,14 @@ describe('extractText', () => {
     it('should extract expected text for ... PRE_PHRASE ... POST_PHRASE ... POST_PHRASE ...', async () => {
         const request = {
             content:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum I am now going to start the recording session vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero nulla, mattis nec mauris sed, porttitor molestie okay ipsum. Nunc tellus tellus, dapibus quis the our meeting is over felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.',
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum I am now going to start the recording session vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero nulla, mattis nec mauris sed, porttitor molestie finish ipsum. Nunc tellus tellus, dapibus quis the our meeting is over felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.',
             prePhrases: [
                 "I'm now going to start the recording session",
                 'I am now going to start the recording session',
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -140,9 +128,7 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -158,16 +144,14 @@ describe('extractText', () => {
     it('should extract expected text for ... PRE_PHRASE ... POST_PHRASE ... PRE_PHRASE ... POST_PHRASE', async () => {
         const request = {
             content:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer I'm going to do a recording session est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus the our meeting is over placerat neque a ornare efficitur. Nunc libero nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac I am now going to start the recording session maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non Okay molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer I'm going to do a recording session est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus the our meeting is over placerat neque a ornare efficitur. Nunc libero nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac I am now going to start the recording session maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non Finish molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
             prePhrases: [
                 "I'm now going to start the recording session",
                 'I am now going to start the recording session',
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -190,9 +174,7 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -215,9 +197,7 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -233,16 +213,14 @@ describe('extractText', () => {
     it('should extract expected text for ... PRE_PHRASE ... PRE_PHRASE ... POST_PHRASE ... POST_PHRASE ... PRE_PHRASE ... PRE_PHRASE ... POST_PHRASE', async () => {
         const request = {
             content:
-                "Lorem ipsum dolor sit amet, consectetur I'm going to do a recording session adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin I'm going to do a recording session eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a okay tincidunt sodales, nunc nulla vehicula nibh, at the our meeting is now over luctus dolor nisi sed neque. Vestibulum vulputate malesuada tellus, a dictum sapien pulvinar sed. I'm going to do a recording session Vivamus placerat neque a ornare efficitur. Nunc libero nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis I'm going to do a recording session vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie the our meeting is over leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
+                "Lorem ipsum dolor sit amet, consectetur I'm going to do a recording session adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin I'm going to do a recording session eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a finish tincidunt sodales, nunc nulla vehicula nibh, at the our meeting is now over luctus dolor nisi sed neque. Vestibulum vulputate malesuada tellus, a dictum sapien pulvinar sed. I'm going to do a recording session Vivamus placerat neque a ornare efficitur. Nunc libero nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis I'm going to do a recording session vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie the our meeting is over leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
             prePhrases: [
                 "I'm now going to start the recording session",
                 'I am now going to start the recording session',
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -265,9 +243,7 @@ describe('extractText', () => {
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);
@@ -283,16 +259,14 @@ describe('extractText', () => {
     it('should extract expected text for ... PRE_PHRASE ... PRE_PHRASE ... POST_PHRASE ... POST_PHRASE ... PRE_PHRASE ... POST_PHRASE ... PRE_PHRASE ... POST_PHRASE ... POST_PHRASE', async () => {
         const request = {
             content:
-                "Lorem ipsum dolor sit amet, I'm now going to start the recording session consectetur adipiscing elit. Nulla libero I am now going to start the recording session est, consectetur a fringilla ac, the our meeting is over ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin the our meeting is now over eu magna turpis. Integer est sapien, faucibus eget varius I'm going to do a recording session interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam the our meeting is over a tincidunt sodales, nunc nulla vehicula nibh, at I am going to do a recording session luctus dolor nisi sed neque. Vestibulum vulputate malesuada okay tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc the our meeting is over libero nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
+                "Lorem ipsum dolor sit amet, I'm now going to start the recording session consectetur adipiscing elit. Nulla libero I am now going to start the recording session est, consectetur a fringilla ac, the our meeting is over ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin the our meeting is now over eu magna turpis. Integer est sapien, faucibus eget varius I'm going to do a recording session interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam the our meeting is over a tincidunt sodales, nunc nulla vehicula nibh, at I am going to do a recording session luctus dolor nisi sed neque. Vestibulum vulputate malesuada finish tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc the our meeting is over libero nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.",
             prePhrases: [
                 "I'm now going to start the recording session",
                 'I am now going to start the recording session',
                 "I'm going to do a recording session",
                 'I am going to do a recording session'
             ],
-            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'okay'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is now over', 'the our meeting is over', 'finish']
         };
 
         const result = await fts.extractText(request);

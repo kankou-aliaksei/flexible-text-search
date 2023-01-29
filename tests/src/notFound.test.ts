@@ -13,14 +13,11 @@ describe('notFound', () => {
                 'going to do a recording session',
                 'going to do a recording session'
             ],
-            postPhrases: ['our meeting is now over', 'our meeting is over'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['our meeting is now over', 'our meeting is over']
         };
 
         const result = await fts.extractText(request);
-        const expectedExtractedText = 'Not found';
 
-        expect(result.extractedText).toEqual(expectedExtractedText);
+        expect(result.extractedText).toBeUndefined();
     });
 });

@@ -10,8 +10,8 @@ Flexible text search with search by part of a phrase, fuzzy for each word, and u
 
     The solution uses Elasticsearch. Therefore, you need to have an ElasticSearch instance running with a preset [index](elasticsearch/text_search_index.json).
 
-| WARNING: Elasticseacrh is required |
-|------------------------------------|
+| WARNING: Elasticsearch is required. Solution has been tested on Elasticsearch version 7.17.8 |
+|----------------------------------------------------------------------------------------------|
 
 ## Features
 
@@ -33,8 +33,6 @@ The search phrase can be found even if there are words not from the search phras
 
 Note - the number of additional words between words in the search phrase is set by the MAX_DISTANCE_BETWEEN_WORDS parameter (if the parameter is equal to 0, then the presence of additional words is excluded).
 
-See examples in the [/tests](./tests) for all details.
-
 ### findText
 
 It finds phrases in text
@@ -54,6 +52,10 @@ It checks if phrases exist in the text
 
 ## Example
 
+See more examples in the [/tests](./tests/src).
+
+### extractText
+
 ```
 import { FlexibleTextSearch } from 'flexible-text-search';
 
@@ -68,9 +70,7 @@ const request = {
         "I'm going to do a recording session",
         'I am going to do a recording session'
     ],
-    postPhrases: ['the our meeting is now over', 'the our meeting is over'],
-    foundTemplate: '${}',
-    notFoundTemplate: 'Not found'
+    postPhrases: ['the our meeting is now over', 'the our meeting is over']
 };
 
 const result = await fts.extractText(request);
@@ -78,7 +78,7 @@ const result = await fts.extractText(request);
 console.log(JSON.stringify(result))
 ```
 
-### Result
+#### Result
 
 ```
 {
@@ -109,8 +109,6 @@ console.log(JSON.stringify(result))
          "type":"POST_PHRASE"
       }
    ],
-   "foundTemplate":"${}",
-   "notFoundTemplate":"Not found",
    "extractedText":"vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero",
    "foundPrePhrases":[
       {

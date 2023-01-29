@@ -26,14 +26,11 @@ import {
     removeStartEndPunctuationCharacters
 } from './util';
 import {
-    leaveOneFoundEntityWithBestAccuracyForEachRange,
-    getHighlightedTerms
+    getHighlightedTerms,
+    leaveOneFoundEntityWithBestAccuracyForEachRange
 } from './text-search-util';
 import { ILogObj } from 'tslog/dist/types/interfaces';
-import {
-    SearchHit,
-    WriteResponseBase
-} from '@elastic/elasticsearch/lib/api/types';
+import { SearchHit, WriteResponseBase } from '@elastic/elasticsearch/lib/api/types';
 
 // Parameters affecting search accuracy
 
@@ -154,8 +151,6 @@ export class FlexibleTextSearch {
                 value: phrase,
                 type: 'POST_PHRASE'
             }));
-            const foundTemplate = extractTextRequest.foundTemplate;
-            const notFoundTemplate = extractTextRequest.notFoundTemplate;
 
             const phrasesToSearch: PhraseEntity[] = prePhrases.concat(postPhrases);
 
@@ -178,11 +173,9 @@ export class FlexibleTextSearch {
                 return {
                     content,
                     phrasesToSearch,
-                    foundTemplate,
-                    notFoundTemplate,
-                    extractedText: notFoundTemplate,
                     foundPrePhrases: [],
-                    foundPostPhrases: []
+                    foundPostPhrases: [],
+                    extractedText: undefined
                 };
             }
 
@@ -192,17 +185,11 @@ export class FlexibleTextSearch {
                 foundPostPhrases
             );
 
-            const foundText = this.applyFoundTemplate(
-                extractedPhrases,
-                foundTemplate,
-                notFoundTemplate
-            );
+            const foundText = this.joinFoundPhrases(extractedPhrases);
 
             return {
                 content,
                 phrasesToSearch,
-                foundTemplate,
-                notFoundTemplate,
                 extractedText: foundText,
                 foundPrePhrases,
                 foundPostPhrases
@@ -374,13 +361,9 @@ export class FlexibleTextSearch {
         return extractedPhrases;
     }
 
-    private applyFoundTemplate(
-        extractedPhrases: string[],
-        foundTemplate: string,
-        notFoundTemplate: string
-    ): string {
+    private joinFoundPhrases(extractedPhrases: string[]): string | undefined {
         if (extractedPhrases.length) {
-            const extractedText = extractedPhrases
+            return extractedPhrases
                 .map(phrase =>
                     removeStartEndPunctuationCharacters(
                         phrase,
@@ -388,13 +371,8 @@ export class FlexibleTextSearch {
                     )
                 )
                 .join(JOIN_SYMBOL);
-
-            if (foundTemplate) {
-                return foundTemplate.replace('${}', extractedText);
-            }
-            return extractedText;
         }
-        return notFoundTemplate;
+        return undefined;
     }
 
     private async foundInIndex(

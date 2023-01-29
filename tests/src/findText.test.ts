@@ -1,4 +1,4 @@
-import { FlexibleTextSearch } from '../../src/flexible-text-search';
+import { FlexibleTextSearch } from '../../src';
 
 const fts = new FlexibleTextSearch();
 
@@ -38,6 +38,9 @@ describe('findText', () => {
 
         const result = await fts.findText(request);
 
+        console.log(JSON.stringify(result));
+
         expect(result[0].foundText).toEqual('relax plan');
+        expect(result.length).toEqual(1);
     });
 });

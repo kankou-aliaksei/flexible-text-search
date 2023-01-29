@@ -4,8 +4,6 @@ export interface ExtractTextRequest {
     content: string;
     prePhrases: string[];
     postPhrases: string[];
-    foundTemplate: string;
-    notFoundTemplate: string;
 }
 
 export interface FoundEntity {
@@ -48,9 +46,7 @@ export interface ExtractTextOptions {
 export interface ExtractedTextEntity {
     content: string;
     phrasesToSearch: PhraseEntity[];
-    foundTemplate: string;
-    notFoundTemplate: string;
-    extractedText: string;
+    extractedText: string | undefined;
     foundPrePhrases: FoundEntity[];
     foundPostPhrases: FoundEntity[];
 }

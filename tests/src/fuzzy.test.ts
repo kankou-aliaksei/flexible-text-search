@@ -8,9 +8,7 @@ describe('fuzzy', () => {
             content:
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum hello beaudiful ocean ligula erat, imperdiet rutrum nisl at, placerat consectetur erat. the our meeting is over Nullam sollicitudin mi consequat, maximus ante eu, sodales lectus. Morbi vel tristique mauris. Maecenas auctor vel lacus sit amet finibus. Phasellus vitae dapibus est. Donec pharetra, quam et vulputate vehicula, felis arcu cursus nisi, ut eleifend augue mauris molestie nisl. Proin non orci diam. Ut ullamcorper ligula eget bibendum consectetur.',
             prePhrases: ['hello beautiful ocean'],
-            postPhrases: ['the our meeting is over'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is over']
         };
 
         const result = await fts.extractText(request);
@@ -37,9 +35,7 @@ describe('fuzzy', () => {
             content:
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum hetlo beaudiful ocea ligula erat, imperdiet rutrum nisl at, placerat consectetur erat. the our meeting is over Nullam sollicitudin mi consequat, maximus ante eu, sodales lectus. Morbi vel tristique mauris. Maecenas auctor vel lacus sit amet finibus. Phasellus vitae dapibus est. Donec pharetra, quam et vulputate vehicula, felis arcu cursus nisi, ut eleifend augue mauris molestie nisl. Proin non orci diam. Ut ullamcorper ligula eget bibendum consectetur.',
             prePhrases: ['hello beautiful ocean'],
-            postPhrases: ['the our meeting is over'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is over']
         };
 
         const result = await fts.extractText(request);
@@ -66,9 +62,7 @@ describe('fuzzy', () => {
             content:
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum hetlo beaudiful oceans ligula erat, imperdiet rutrum nisl at, placerat consectetur erat. the our meeting is over Nullam sollicitudin mi consequat, maximus ante eu, sodales lectus. Morbi vel tristique mauris. Maecenas auctor vel lacus sit amet finibus. Phasellus vitae dapibus est. Donec pharetra, quam et vulputate vehicula, felis arcu cursus nisi, ut eleifend augue mauris molestie nisl. Proin non orci diam. Ut ullamcorper ligula eget bibendum consectetur.',
             prePhrases: ['hello beautiful ocean'],
-            postPhrases: ['the our meeting is over'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is over']
         };
 
         const result = await fts.extractText(request);
@@ -95,9 +89,7 @@ describe('fuzzy', () => {
             content:
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum hetlo beaudiful oceans ligula erat, imperdiet rutrum nisl at, placerat consectetur erat. the our meeting is over Nullam sollicitudin mi consequat, maximus ante eu, sodales lectus. Morbi vel tristique mauris. Maecenas auctor vel lacus sit amet finibus. Phasellus vitae dapibus est. Donec pharetra, quam et vulputate vehicula, felis arcu cursus nisi, ut eleifend augue mauris molestie nisl. Proin non orci diam. Ut ullamcorper ligula eget bibendum consectetur.',
             prePhrases: ['hello beautiful ocean'],
-            postPhrases: ['the our meeting is over'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is over']
         };
 
         const result = await fts.extractText(request);
@@ -124,9 +116,7 @@ describe('fuzzy', () => {
             content:
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum I am goimg to do a recolding session, rutrum nisl at, placerat consectetur erat. the our meeting is over Nullam sollicitudin mi consequat, maximus ante eu, sodales lectus. Morbi vel tristique mauris. Maecenas auctor vel lacus sit amet finibus. Phasellus vitae dapibus est. Donec pharetra, quam et vulputate vehicula, felis arcu cursus nisi, ut eleifend augue mauris molestie nisl. Proin non orci diam. Ut ullamcorper ligula eget bibendum consectetur.',
             prePhrases: ['I am going to do a recording session'],
-            postPhrases: ['the our meeting is over'],
-            foundTemplate: '${}',
-            notFoundTemplate: 'Not found'
+            postPhrases: ['the our meeting is over']
         };
 
         const result = await fts.extractText(request);
