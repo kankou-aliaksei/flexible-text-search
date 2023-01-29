@@ -47,6 +47,8 @@ It checks if phrases exist in the text
 
 * Docker
 
+## Usage
+
 * npm i
 * npm run test
 
