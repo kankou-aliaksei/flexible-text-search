@@ -191,7 +191,6 @@ export class FlexibleTextSearch {
     }
 
     public async findText(findTextRequest: FindTextRequest): Promise<FoundEntity[]> {
-        const start = Date.now();
         try {
             const content = findTextRequest.content;
 
@@ -208,9 +207,6 @@ export class FlexibleTextSearch {
         } catch (error) {
             this.log.error(error);
             throw error;
-        } finally {
-            const end = Date.now();
-            this.log.info(`Duration is ${(end - start) / 1000} seconds`);
         }
     }
 
@@ -302,7 +298,7 @@ export class FlexibleTextSearch {
         } finally {
             try {
                 if (DO_DOCUMENTS_DELETE && documentId) {
-                    this.log.info(`Deleting of the ${documentId} document`);
+                    this.log.debug(`Deleting of the ${documentId} document`);
                     await this.esClient.delete({
                         index: this.options.esSearchIndex!,
                         id: documentId
