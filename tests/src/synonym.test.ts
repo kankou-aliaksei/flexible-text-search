@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { readFileSync } from 'fs';
 
 import { FlexibleTextSearch } from '../../src';
 
@@ -11,7 +11,7 @@ const fts = new FlexibleTextSearch({
             password: process.env.ES_PASSWORD!
         },
         tls: {
-            ca: fs.readFileSync('./tests/http_ca.crt')
+            ca: readFileSync('./tests/http_ca.crt')
         }
     }
 });

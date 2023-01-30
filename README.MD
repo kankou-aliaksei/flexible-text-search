@@ -63,7 +63,7 @@ See more examples in the [/tests](./tests/src).
 ### TLS connection
 
 ```
-import * as fs from 'fs';
+import { readFileSync } from 'fs';
 
 import { FlexibleTextSearch } from '../../src';
 
@@ -76,7 +76,7 @@ const fts = new FlexibleTextSearch({
             password: '<password>'
         },
         tls: {
-            ca: fs.readFileSync('./http_ca.crt')
+            ca: readFileSync('./http_ca.crt')
         }
     }
 });
