@@ -196,3 +196,30 @@ console.log(JSON.stringify(result))
    ]
 }
 ```
+
+### JavaScript
+
+```
+const { FlexibleTextSearch } = require('flexible-text-search');
+
+const fts = new FlexibleTextSearch({
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: 'http://localhost:9200'
+    }
+});
+
+const request = {
+    content:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero est, consectetur a fringilla ac, ornare vitae nisl. Sed semper faucibus vestibulum. Mauris eu scelerisque nunc. Proin eu magna turpis. Integer est sapien, faucibus eget varius interdum, consequat auctor felis. Sed sit amet placerat tellus. Mauris fringilla, diam a tincidunt sodales, nunc nulla vehicula nibh, at luctus dolor nisi sed neque. Vestibulum I am now going to start the recording session vulputate malesuada tellus, a dictum sapien pulvinar sed. Vivamus placerat neque a ornare efficitur. Nunc libero the our meeting is over nulla, mattis nec mauris sed, porttitor molestie ipsum. Nunc tellus tellus, dapibus quis felis vel, blandit venenatis enim. Aenean ac cursus est. Curabitur rutrum ante ac maximus pharetra. Sed et iaculis felis, eget imperdiet ex. Fusce sit amet diam sed felis semper laoreet. Nulla facilisi. Quisque in molestie lectus, in finibus purus. Curabitur sagittis neque gravida velit pharetra, non efficitur arcu sodales. Integer non molestie leo. Ut eget ex sed tortor efficitur volutpat vitae sit amet neque.',
+    prePhrases: [
+        "I'm now going to start the recording session",
+        'I am now going to start the recording session',
+        "I'm going to do a recording session",
+        'I am going to do a recording session'
+    ],
+    postPhrases: ['the our meeting is now over', 'the our meeting is over']
+};
+
+fts.extractText(request).then(result => console.log(JSON.stringify(result)));
+```

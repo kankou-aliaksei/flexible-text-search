@@ -1,11 +1,10 @@
 {
   "name": "flexible-text-search",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Flexible text search with search by part of a phrase, fuzzy for each word, and use of synonyms. Extract text between phrases",
   "main": "lib/index.js",
   "scripts": {
     "test": "ES_PASSWORD=test && source tests/es_start.sh -protocol https -port 9400 -password $ES_PASSWORD && source tests/es_start.sh -protocol http -port 9200 -password $ES_PASSWORD && ES_PASSWORD=$ES_PASSWORD jest || (tests/es_stop.sh && exit 1) && tests/es_stop.sh",
-    "t": "source tests/es_start.sh -protocol https -port 9400",
     "lint": "tslint --project . --format verbose",
     "build": "tsc -p .",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"tests/**/*.test.ts\""
