@@ -85,8 +85,6 @@ const fts = new FlexibleTextSearch({
 ### HTTP connection
 
 ```
-import * as fs from 'fs';
-
 import { FlexibleTextSearch } from '../../src';
 
 const fts = new FlexibleTextSearch({
