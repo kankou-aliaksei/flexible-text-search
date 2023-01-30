@@ -8,10 +8,14 @@ Flexible text search with search by part of a phrase, fuzzy for each word, and u
 * npm
 * Elasticsearch
 
-    The solution uses Elasticsearch. Therefore, you need to have an ElasticSearch instance running with a preset [index](elasticsearch/text_search_index.json).
+    The solution uses Elasticsearch. Therefore, you need to have an ElasticSearch instance running with a preset [index](elasticsearch/docker/text_search_index.json).
 
-| WARNING: Elasticsearch is required. Solution has been tested on Elasticsearch version 7.17.8 |
-|----------------------------------------------------------------------------------------------|
+| WARNING: Elasticsearch is required. |
+|-------------------------------------|
+
+## Elasticsearch support
+
+Elasticsearch versions 7 and 8 are supported.
 
 ## Features
 
@@ -56,14 +60,53 @@ It checks if phrases exist in the text
 
 See more examples in the [/tests](./tests/src).
 
+### TLS connection
+
+```
+import * as fs from 'fs';
+
+import { FlexibleTextSearch } from '../../src';
+
+const fts = new FlexibleTextSearch({
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: 'https://localhost:9200',
+        auth: {
+            username: 'elastic',
+            password: '<password>'
+        },
+        tls: {
+            ca: fs.readFileSync('./http_ca.crt')
+        }
+    }
+});
+```
+
+### HTTP connection
+
+```
+import * as fs from 'fs';
+
+import { FlexibleTextSearch } from '../../src';
+
+const fts = new FlexibleTextSearch({
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: 'http://localhost:9200'
+    }
+});
+```
+
 ### extractText
 
 ```
 import { FlexibleTextSearch } from 'flexible-text-search';
 
 const fts = new FlexibleTextSearch({
-    esHost: 'localhost',
-    esPort: 9200
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: 'http://localhost:9200'
+    }
 });
 
 const request = {

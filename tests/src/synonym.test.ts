@@ -1,6 +1,20 @@
-import { FlexibleTextSearch } from '../../src/flexible-text-search';
+import * as fs from 'fs';
 
-const fts = new FlexibleTextSearch();
+import { FlexibleTextSearch } from '../../src';
+
+const fts = new FlexibleTextSearch({
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: `https://localhost:9400`,
+        auth: {
+            username: 'elastic',
+            password: process.env.ES_PASSWORD!
+        },
+        tls: {
+            ca: fs.readFileSync('./tests/http_ca.crt')
+        }
+    }
+});
 
 describe('synonym', () => {
     it("should extract expected text by using a synonym. 'It is a cute ocean' is considered as 'It is a beautiful ocean' because of synonyms", async () => {

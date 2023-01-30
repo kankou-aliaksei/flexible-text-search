@@ -1,6 +1,11 @@
 import { FlexibleTextSearch } from '../../src';
 
-const fts = new FlexibleTextSearch();
+const fts = new FlexibleTextSearch({
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: `http://localhost:9200`
+    }
+});
 
 describe('findText', () => {
     it('should find an expected phrase', async () => {

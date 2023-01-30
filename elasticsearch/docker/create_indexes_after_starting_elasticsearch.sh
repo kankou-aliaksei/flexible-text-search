@@ -1,10 +1,25 @@
-#!/bin/bash
+#!/bin/sh
 
-# use while loop to check if elasticsearch is running
+protocol=$1
+password=$2
+index_name="text-search"
+username="elastic"
+
 timeout_in_secs=60
 sleep_in_secs=5
 start_timestamp=$(date +%s)
-index_name="text-search"
+url="$protocol://127.0.0.1:9200/$index_name"
+certificate_path="/usr/share/elasticsearch/config/certs/http_ca.crt"
+
+https_opts_optional=""
+if [ "$protocol" == "https" ]; then
+    https_opts_optional="--cacert $certificate_path -u '$username:$password'"
+fi
+
+echo protocol: $protocol
+
+curl_params="$https_opts_optional -d @text_search_index.json -H 'Content-Type: application/json' -X PUT $url"
+
 while true
 do
     netstat -uplnt | grep :9200 | grep LISTEN > /dev/null
@@ -12,7 +27,7 @@ do
     if [ 0 = $verifier ]
         then
             echo "Indexes creation started"
-            curl -d @text_search_index.json -H 'Content-Type: application/json' -X PUT http://127.0.0.1:9200/$index_name
+            sh -c "curl $curl_params"
             break
         else
             current_timestamp=$(date +%s)

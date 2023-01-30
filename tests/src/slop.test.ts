@@ -1,4 +1,4 @@
-import { FlexibleTextSearch } from '../../src/flexible-text-search';
+import { FlexibleTextSearch } from '../../src';
 
 const fts = new FlexibleTextSearch();
 

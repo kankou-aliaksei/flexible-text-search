@@ -1,10 +1,9 @@
 import {
     ExtractedTextEntity,
-    ExtractTextOptions,
+    FlexibleTextOptions,
     ExtractTextRequest,
     FindTextRequest,
     FoundEntity,
-    IndexDocument,
     LogLevel,
     NearestPositionsResponse,
     PhraseEntity,
@@ -13,12 +12,11 @@ import {
     TextType
 } from './types';
 
-import elasticsearch, { Client, DeleteDocumentParams, IndexDocumentParams } from 'elasticsearch';
+import elasticsearch, { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
 import { ceil } from 'mathjs';
 import _ from 'underscore';
 import { Logger } from 'tslog';
-import { ElasticSearchApi } from './elastic-search-api';
 import {
     generateCombinations,
     getPositions,
@@ -31,6 +29,7 @@ import {
 } from './text-search-util';
 import { ILogObj } from 'tslog/dist/types/interfaces';
 import { SearchHit, WriteResponseBase } from '@elastic/elasticsearch/lib/api/types';
+import { ClientOptions } from '@elastic/elasticsearch/lib/client';
 
 // Parameters affecting search accuracy
 
@@ -115,26 +114,17 @@ const DO_DOCUMENTS_DELETE = true;
 
 export class FlexibleTextSearch {
     private readonly esClient: Client;
-    private readonly elasticSearchApi: ElasticSearchApi;
-    private readonly options: ExtractTextOptions = {} as ExtractTextOptions;
+    private readonly options: FlexibleTextOptions = {} as FlexibleTextOptions;
     private readonly log: Logger<ILogObj>;
 
-    public constructor(options: ExtractTextOptions = {} as ExtractTextOptions) {
-        this.options.esHost = options.esHost || process.env.ES_HOST || 'localhost';
-        this.options.esPort = options.esPort || parseInt(process.env.ES_PORT || '9200');
-        this.options.esSearchIndex =
-            options.esSearchIndex || process.env.ES_SEARCH_INDEX || 'text-search';
+    public constructor(options: FlexibleTextOptions = {} as FlexibleTextOptions) {
+        this.options.esSearchIndex = options.esSearchIndex || 'text-search';
 
-        this.elasticSearchApi = new ElasticSearchApi({
-            host: this.options.esHost,
-            port: this.options.esPort,
-            timeout: this.options.esTimeout
-        });
+        const esClientOpts: ClientOptions = options.esClientOptions || {
+            node: `http://localhost:9200`
+        };
 
-        this.esClient = new elasticsearch.Client({
-            host: `${this.options.esHost}:${this.options.esPort}`,
-            log: 'error'
-        });
+        this.esClient = new elasticsearch.Client(esClientOpts);
 
         this.log = new Logger({ minLevel: options.logLevel || LogLevel.Info });
     }
@@ -215,9 +205,9 @@ export class FlexibleTextSearch {
                     foundEntities => foundEntities.length
                 )
             );
-        } catch (e) {
-            this.log.error(e);
-            throw e;
+        } catch (error) {
+            this.log.error(error);
+            throw error;
         } finally {
             const end = Date.now();
             this.log.info(`Duration is ${(end - start) / 1000} seconds`);
@@ -313,12 +303,10 @@ export class FlexibleTextSearch {
             try {
                 if (DO_DOCUMENTS_DELETE && documentId) {
                     this.log.info(`Deleting of the ${documentId} document`);
-                    const deleteDocumentParams: DeleteDocumentParams = {
-                        index: this.options.esSearchIndex,
+                    await this.esClient.delete({
+                        index: this.options.esSearchIndex!,
                         id: documentId
-                    } as DeleteDocumentParams;
-
-                    await this.esClient.delete(deleteDocumentParams);
+                    });
                 } else {
                     this.log.debug(`Indexed ${documentId} document has not been deleted`);
                 }
@@ -411,8 +399,12 @@ export class FlexibleTextSearch {
         try {
             const request = {
                 index: this.options.esSearchIndex,
-                body: requestBody
+                ...requestBody
             };
+
+            // Deleting an extra property to be compatible with the Elasticsearch v8
+            // tslint:disable-next-line
+            delete (request as any).query.bool.filter.ids.type;
 
             this.log.debug('Request: ' + JSON.stringify(request, undefined, 4));
 
@@ -628,17 +620,14 @@ export class FlexibleTextSearch {
      */
     private async indexTextToSearch(textToSearch: string): Promise<string> {
         try {
-            const indexDocumentParams: IndexDocumentParams<IndexDocument> = {
+            const result: WriteResponseBase = await this.esClient.index({
                 index: this.options.esSearchIndex!,
                 refresh: 'wait_for',
-                body: {
+                document: {
                     [SEARCH_FIELD_NAME]: textToSearch
-                },
-                type: '_doc'
-            };
-            const result: WriteResponseBase = (await this.esClient.index(
-                indexDocumentParams
-            )) as WriteResponseBase;
+                }
+            });
+
             return result._id;
         } catch (e) {
             this.log.error('An error occurred during text indexing');
@@ -824,14 +813,17 @@ export class FlexibleTextSearch {
         this.log.info(
             `${highlightedEntity.text} found but not in highlighted terms. It can be a synonym.`
         );
-        const termVectors = await this.elasticSearchApi.getTermVectors(
-            hit._id,
-            this.options.esSearchIndex
-        );
 
-        const termVectorKeys = Object.keys(termVectors);
+        const termVectors = await this.esClient.termvectors({
+            id: hit._id,
+            index: this.options.esSearchIndex!
+        });
+
+        const terms = termVectors.term_vectors!.content.terms;
+
+        const termVectorKeys = Object.keys(terms);
         for (const termVectorKey of termVectorKeys) {
-            const startOffsets: number[] = termVectors[termVectorKey].tokens!.map(
+            const startOffsets: number[] = terms[termVectorKey].tokens!.map(
                 token => token.start_offset!
             );
             if (

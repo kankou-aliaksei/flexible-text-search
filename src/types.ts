@@ -1,4 +1,4 @@
-import { Explanation } from 'elasticsearch';
+import { ClientOptions } from '@elastic/elasticsearch/lib/client';
 
 export interface ExtractTextRequest {
     content: string;
@@ -29,18 +29,10 @@ export interface PositionEntity {
 
 export type TextType = 'PRE_PHRASE' | 'POST_PHRASE' | 'TEXT';
 
-export interface ElasticSearchApiOptions {
-    host: string | undefined;
-    port: number | undefined;
-    timeout: number | undefined;
-}
-
-export interface ExtractTextOptions {
-    esHost?: string | undefined;
-    esPort?: number | undefined;
+export interface FlexibleTextOptions {
     esSearchIndex?: string | undefined;
     logLevel?: LogLevel | undefined;
-    esTimeout?: number | undefined;
+    esClientOptions?: ClientOptions | undefined;
 }
 
 export interface ExtractedTextEntity {
@@ -87,8 +79,4 @@ export interface PopulateFuzzyTermsBucketResponse {
     isContinued: boolean;
     isSimpleTerm: boolean | undefined;
     fuzzyTermsBucket: string[];
-}
-
-export interface IndexDocument {
-    content: string;
 }

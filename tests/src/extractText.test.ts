@@ -1,8 +1,10 @@
 import { FlexibleTextSearch } from '../../src';
 
 const fts = new FlexibleTextSearch({
-    esHost: 'localhost',
-    esPort: 9200
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: `http://localhost:9200`
+    }
 });
 
 describe('extractText', () => {

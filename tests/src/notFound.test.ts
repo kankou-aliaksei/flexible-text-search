@@ -1,6 +1,11 @@
-import { FlexibleTextSearch } from '../../src/flexible-text-search';
+import { FlexibleTextSearch } from '../../src';
 
-const fts = new FlexibleTextSearch();
+const fts = new FlexibleTextSearch({
+    esSearchIndex: 'text-search',
+    esClientOptions: {
+        node: `http://localhost:9200`
+    }
+});
 
 describe('notFound', () => {
     it('should extract expected text for ... POST_PHRASE ...', async () => {
