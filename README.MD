@@ -65,7 +65,7 @@ See more examples in the [/tests](./tests/src).
 ```
 import { readFileSync } from 'fs';
 
-import { FlexibleTextSearch } from '../../src';
+import { FlexibleTextSearch } from 'flexible-text-search';
 
 const fts = new FlexibleTextSearch({
     esSearchIndex: 'text-search',
@@ -85,7 +85,7 @@ const fts = new FlexibleTextSearch({
 ### HTTP connection
 
 ```
-import { FlexibleTextSearch } from '../../src';
+import { FlexibleTextSearch } from 'flexible-text-search';
 
 const fts = new FlexibleTextSearch({
     esSearchIndex: 'text-search',
