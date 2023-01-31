@@ -24,6 +24,54 @@ Elasticsearch versions 7 and 8 are supported.
 * Fuzzy search (finding approximate matches) for each word
 * Search by synonyms
 
+## Search accuracy configuration (FlexibleTextOptions)
+
+* **searchOptions** (Optional, SearchOptions)
+  <br> Parameters affecting search accuracy.
+  * **minScore** (Optional, integer, default: 60)
+    <br> Min search accuracy in percentage.
+    <br> We can specify search accuracy as a percentage. This means that a sufficient condition for finding a phrase
+     will be finding a sufficient number of words from the phrase (for example, if the accuracy is 50%, and the
+     phrase consists of 10 words, then it is enough to find any 5 words from the phrase in the order corresponding
+     to the original phrase).
+    <br> Valid values: 1-100
+  * **maxDistanceBetweenWords** (Optional, float, default: 1.2)
+    <br> Since the number of additional words is distributed throughout
+    the phrase. For example, if we want a maximum of 1 additional word between two consecutive words in a phrase
+    (maxDistanceBetweenWords is 1), then we mean that for a phrase 'one two three four', the worst case is
+    'one additional_word_1 two additional_word_2 three additional_word_3 four', but in fact we have a credit of 3
+    additional words per phrase (i.e. the 'one additional_word_1 additional_word_2 two three additional_word_3 four'
+    option will also be acceptable). Therefore, keep this in mind and set the option that suits you.
+  * **fuzziness** (Optional, string, default: 'AUTO')
+    <br> The number of one character changes that need to be made to one string to make it the same as another string.
+    <br> See [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness)
+    <br> Valid values: '0-2', 'AUTO', 'AUTO:[low],[high]'
+  * **fuzzyPrefixLength** (Optional, integer, default: 0)
+    <br> Number of beginning characters left unchanged when creating expansions.
+    <br> See [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html)
+  * **fuzzyMaxExpansions** (Optional, integer, default: 100)
+    <br> Maximum number of variations created.
+    <br> See [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html)
+  * **fuzzyMinSymbols** (Optional, integer, default: 3)
+    <br> The minimum number of characters in a word for which fuzzy search will be applied.
+  * **doesPhraseSearchOnlyOnceWithBestAccuracy** (Optional, boolean, default: false)
+    <br> If the doesPhraseSearchOnlyOnceWithBestAccuracy is true, then the search for the phrase
+     will be terminated immediately after finding the most relevant phrase. For example, a phrase
+     consists of 10 words, the minScore is 50%, which means that it is enough to find at least 5 words.
+     If a 9-word phrase is found and the doesPhraseSearchOnlyOnceWithBestAccuracy is true, the search
+     will be completed. This is the fastest search, but it can lead to the fact that the phrase will not be found
+     in other ranges (for example, if the phrase occurs again and consists of only 8 out of 10 search words).
+     Use the doesPhraseSearchOnlyOnceWithBestAccuracy is true only if you are sure that the desired phrase
+     occurs only once in the text.
+* **esSearchIndex** (Optional, string, default: 'text-search')
+  <br> A pre-configured elastic search index that is used for searching. See [index config](elasticsearch/docker/text_search_index.json)
+* **logLevel** (Optional, integer, default: 3)
+  <br> Log level.
+  <br> Valid values: 0-6. 0: silly, 1: trace, 2: debug, 3: info, 4: warn, 5: error, 6: fatal
+* **esClientOptions** (Optional, ClientOptions)
+  <br> See [type definition](https://github.com/elastic/elasticsearch-js/blob/f90f4306c291865dcc470064b699fdc46a0ce7d6/src/client.ts#L80).
+  <br> Default: { node: 'http://localhost:9200' }
+
 ## Methods
 
 ### extractText
@@ -104,6 +152,11 @@ const fts = new FlexibleTextSearch({
     esSearchIndex: 'text-search',
     esClientOptions: {
         node: 'http://localhost:9200'
+    },
+    searchOptions: {
+        // 1-100
+        minScore: 61,
+        maxDistanceBetweenWords: 1.2
     }
 });
 

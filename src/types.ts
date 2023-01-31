@@ -33,6 +33,27 @@ export interface FlexibleTextOptions {
     esSearchIndex?: string | undefined;
     logLevel?: LogLevel | undefined;
     esClientOptions?: ClientOptions | undefined;
+    searchOptions?: SearchOptions | undefined;
+}
+
+export interface SearchOptions {
+    minScore?: number | undefined;
+    maxDistanceBetweenWords?: number | undefined;
+    fuzziness?: string | undefined;
+    fuzzyPrefixLength?: number | undefined;
+    fuzzyMaxExpansions?: number | undefined;
+    fuzzyMinSymbols?: number | undefined;
+    doesPhraseSearchOnlyOnceWithBestAccuracy?: boolean | undefined;
+}
+
+export interface FinalSearchOptions {
+    minScore: number;
+    maxDistanceBetweenWords: number;
+    fuzziness: string;
+    fuzzyPrefixLength: number;
+    fuzzyMaxExpansions: number;
+    fuzzyMinSymbols: number;
+    doesPhraseSearchOnlyOnceWithBestAccuracy: boolean;
 }
 
 export interface ExtractedTextEntity {

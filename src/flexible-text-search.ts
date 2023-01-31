@@ -9,7 +9,9 @@ import {
     PhraseEntity,
     Position,
     PositionEntity,
-    TextType
+    TextType,
+    FinalSearchOptions,
+    SearchOptions
 } from './types';
 
 import elasticsearch, { Client } from '@elastic/elasticsearch';
@@ -31,76 +33,6 @@ import { ILogObj } from 'tslog/dist/types/interfaces';
 import { SearchHit, WriteResponseBase } from '@elastic/elasticsearch/lib/api/types';
 import { ClientOptions } from '@elastic/elasticsearch/lib/client';
 
-// Parameters affecting search accuracy
-
-/**
- * https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness
- *
- */
-const FUZZINESS = process.env.FUZZINESS || 'AUTO';
-/**
- *
- * Number of beginning characters left unchanged when creating expansions.
- * See https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
- *
- */
-const FUZZY_PREFIX_LENGTH = parseInt(process.env.FUZZY_PREFIX_LENGTH || '0');
-/**
- *
- * Maximum number of variations created.
- * See https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
- *
- */
-const FUZZY_MAZ_EXPANSIONS = parseInt(process.env.FUZZY_MAZ_EXPANSIONS || '100');
-
-/**
- * The minimum number of characters in a word for which fuzzy search will be applied.
- *
- */
-const FUZZY_MIN_SYMBOLS = parseInt(process.env.FUZZY_MIN_SYMBOLS || '3');
-
-/**
- *
- * It's a floating value. Since the number of additional words is distributed throughout
- *  the phrase. For example, if we want a maximum of 1 additional word between two consecutive words in a phrase
- *  (MAX_DISTANCE_BETWEEN_WORDS is 1), then we mean that for a phrase 'one two three four', the worst case is
- *  'one additional_word_1 two additional_word_2 three additional_word_3 four', but in fact we have a credit of 3
- *  additional words per phrase (i.e. the 'one additional_word_1 additional_word_2 two three additional_word_3 four'
- *  option will also be acceptable). Therefore, keep this in mind and set the option that suits you.
- *
- */
-const MAX_DISTANCE_BETWEEN_WORDS = parseFloat(process.env.MAX_DISTANCE_BETWEEN_WORDS || '1.2');
-
-/**
- *
- * We can specify search accuracy as a percentage. This means that a sufficient condition for finding a phrase
- *  will be finding a sufficient number of words from the phrase (for example, if the accuracy is 50%, and the
- *  phrase consists of 10 words, then it is enough to find any 5 words from the phrase in the order corresponding
- *  to the original phrase).
- *
- * MIN_SCORE is from 1 to 100
- */
-const MIN_SCORE = parseInt(process.env.MIN_SCORE || '60');
-
-/**
- *
- * If the DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY is true, then the search for the phrase
- *  will be terminated immediately after finding the most relevant phrase. For example, a phrase
- *  consists of 10 words, the MIN_SCORE is 50%, which means that it is enough to find at least 5 words.
- *  If a 9-word phrase is found and the DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY is true, the search
- *  will be completed. This is the fastest search, but it can lead to the fact that the phrase will not be found
- *  in other ranges (for example, if the phrase occurs again and consists of only 8 out of 10 search words).
- *  Use the DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY is true only if you are sure that the desired phrase
- *  occurs only once in the text.
- *
- */
-const DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY = process.env
-    .DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY
-    ? parseFloat(process.env.DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY)
-    : false;
-
-// Other service parameters that do not affect search accuracy
-
 const HIGHLIGHT_FRAGMENT_SIZE = 10000000;
 const HIGHLIGHT_PRE_TAG = '<em>';
 const HIGHLIGHT_POST_TAG = '</em>';
@@ -116,6 +48,15 @@ export class FlexibleTextSearch {
     private readonly esClient: Client;
     private readonly options: FlexibleTextOptions = {} as FlexibleTextOptions;
     private readonly log: Logger<ILogObj>;
+    private readonly searchOptions: FinalSearchOptions = {
+        minScore: 60,
+        maxDistanceBetweenWords: 1.2,
+        fuzziness: 'AUTO',
+        fuzzyPrefixLength: 0,
+        fuzzyMaxExpansions: 100,
+        fuzzyMinSymbols: 3,
+        doesPhraseSearchOnlyOnceWithBestAccuracy: false
+    };
 
     public constructor(options: FlexibleTextOptions = {} as FlexibleTextOptions) {
         this.options.esSearchIndex = options.esSearchIndex || 'text-search';
@@ -127,6 +68,8 @@ export class FlexibleTextSearch {
         this.esClient = new elasticsearch.Client(esClientOpts);
 
         this.log = new Logger({ minLevel: options.logLevel || LogLevel.Info });
+
+        this.setFinalSearchOptions(options.searchOptions);
     }
 
     public async extractText(extractTextRequest: ExtractTextRequest): Promise<ExtractedTextEntity> {
@@ -231,7 +174,7 @@ export class FlexibleTextSearch {
         const textToSearch = phrase.value.toLowerCase();
         const textType = phrase.type;
 
-        if (MIN_SCORE > 100 || MIN_SCORE < 1) {
+        if (this.searchOptions.minScore > 100 || this.searchOptions.minScore < 1) {
             throw new Error('The minimum score must be from 1 to 100');
         }
 
@@ -248,8 +191,7 @@ export class FlexibleTextSearch {
     private async indexAndSearch(
         content: string,
         textToSearch: string,
-        textType: TextType,
-        minScore: number = MIN_SCORE
+        textType: TextType
     ): Promise<FoundEntity[]> {
         let documentId: string | undefined;
 
@@ -263,17 +205,17 @@ export class FlexibleTextSearch {
                 return await this.foundInIndex(content, textToSearch, documentId, words, textType);
             }
 
-            if (MIN_SCORE === 100) {
+            if (this.searchOptions.minScore === 100) {
                 this.log.debug(
                     `${documentId} | We search all words since the minimum score is 100`
                 );
                 return await this.foundInIndex(content, textToSearch, documentId, words, textType);
             }
 
-            const minFoundWordsNumber = ceil((words.length * minScore) / 100);
+            const minFoundWordsNumber = ceil((words.length * this.searchOptions.minScore) / 100);
 
             this.log.debug(
-                `${documentId} | Number of search words: ${words.length} | Min score: ${minScore} | Min matched number of words: ${minFoundWordsNumber}`
+                `${documentId} | Number of search words: ${words.length} | Min score: ${this.searchOptions.minScore} | Min matched number of words: ${minFoundWordsNumber}`
             );
 
             if (minFoundWordsNumber === words.length) {
@@ -634,18 +576,20 @@ export class FlexibleTextSearch {
 
     private generateSpanNear(words: string[]): esb.SpanNearQuery {
         // Slop controls the maximum number of intervening unmatched positions permitted
-        const slop = ceil((words.length - 1) * MAX_DISTANCE_BETWEEN_WORDS);
+        const slop = ceil((words.length - 1) * this.searchOptions.maxDistanceBetweenWords);
 
-        this.log.debug(`MAX_DISTANCE_BETWEEN_WORDS: ${MAX_DISTANCE_BETWEEN_WORDS}, slop: ${slop}`);
+        this.log.debug(
+            `maxDistanceBetweenWords: ${this.searchOptions.maxDistanceBetweenWords}, slop: ${slop}`
+        );
 
         const clauses = words.map(word => {
-            if (word.length > FUZZY_MIN_SYMBOLS) {
+            if (word.length > this.searchOptions.fuzzyMinSymbols) {
                 const fuzzyQuery = esb
                     .fuzzyQuery(SEARCH_FIELD_NAME, word)
-                    .fuzziness(FUZZINESS)
-                    .prefixLength(FUZZY_PREFIX_LENGTH)
+                    .fuzziness(this.searchOptions.fuzziness)
+                    .prefixLength(this.searchOptions.fuzzyPrefixLength)
                     .transpositions(true)
-                    .maxExpansions(FUZZY_MAZ_EXPANSIONS);
+                    .maxExpansions(this.searchOptions.fuzzyMaxExpansions);
                 return esb.spanMultiTermQuery().match(fuzzyQuery);
             }
             return esb.spanTermQuery().field(SEARCH_FIELD_NAME).value(word);
@@ -705,14 +649,14 @@ export class FlexibleTextSearch {
                             `${documentId} | The search has been completed | result was found`
                         );
                         results = results.concat(foundEntities);
-                        if (DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY) {
+                        if (this.searchOptions.doesPhraseSearchOnlyOnceWithBestAccuracy) {
                             return results;
                         }
                     }
                     actualSearchWordNumber--;
                 } else {
                     const wordCombinations = generateCombinations(words, actualSearchWordNumber--);
-                    if (DOES_PHRASE_SEARCH_ONLY_ONCE_WITH_BEST_ACCURACY) {
+                    if (this.searchOptions.doesPhraseSearchOnlyOnceWithBestAccuracy) {
                         for (const wordCombination of wordCombinations) {
                             const foundEntities = await this.foundInIndex(
                                 content,
@@ -835,6 +779,33 @@ export class FlexibleTextSearch {
                         highlightedTerm.push(highlightedEntity.text);
                     }
                 }
+            }
+        }
+    }
+
+    private setFinalSearchOptions(searchOptions: SearchOptions | undefined) {
+        if (searchOptions) {
+            if (searchOptions.minScore) {
+                this.searchOptions.minScore = searchOptions.minScore;
+            }
+            if (searchOptions.maxDistanceBetweenWords) {
+                this.searchOptions.maxDistanceBetweenWords = searchOptions.maxDistanceBetweenWords;
+            }
+            if (searchOptions.fuzziness) {
+                this.searchOptions.fuzziness = searchOptions.fuzziness;
+            }
+            if (searchOptions.fuzzyPrefixLength) {
+                this.searchOptions.fuzzyPrefixLength = searchOptions.fuzzyPrefixLength;
+            }
+            if (searchOptions.fuzzyMaxExpansions) {
+                this.searchOptions.fuzzyMaxExpansions = searchOptions.fuzzyMaxExpansions;
+            }
+            if (searchOptions.fuzzyMinSymbols) {
+                this.searchOptions.fuzzyMinSymbols = searchOptions.fuzzyMinSymbols;
+            }
+            if (searchOptions.doesPhraseSearchOnlyOnceWithBestAccuracy !== undefined) {
+                this.searchOptions.doesPhraseSearchOnlyOnceWithBestAccuracy =
+                    searchOptions.doesPhraseSearchOnlyOnceWithBestAccuracy;
             }
         }
     }
